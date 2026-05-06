@@ -98,13 +98,13 @@ else:
 st.subheader("🌐 Bước 3: Kiểm tra Mạng Giáo viên (Client-side)")
     
     # 1. Khai báo các biến trí nhớ cho hệ thống
-    if "is_pinging" not in st.session_state:
+if "is_pinging" not in st.session_state:
         st.session_state.is_pinging = False
-    if "ping_attempts" not in st.session_state:
+if "ping_attempts" not in st.session_state:
         st.session_state.ping_attempts = 0
 
     # 2. Bật công tắc và reset bộ đếm khi bấm nút
-    if st.button("Đo kiểm mạng thực tế"):
+if st.button("Đo kiểm mạng thực tế"):
         st.session_state.is_pinging = True
         st.session_state.ping_attempts = 0
 
