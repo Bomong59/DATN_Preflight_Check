@@ -98,15 +98,15 @@ else:
 st.subheader("🌐 Bước 3: Kiểm tra Mạng Giáo viên (Client-side)")
     
     # 1. Tạo biến nhớ trạng thái để hệ thống không quên việc đang đo mạng
-    if "is_pinging" not in st.session_state:
+if "is_pinging" not in st.session_state:
         st.session_state.is_pinging = False
 
     # 2. Nút bấm bây giờ chỉ làm nhiệm vụ BẬT công tắc
-    if st.button("Đo kiểm mạng thực tế"):
+if st.button("Đo kiểm mạng thực tế"):
         st.session_state.is_pinging = True
 
     # 3. Khi công tắc bật, vòng lặp chờ JavaScript sẽ chạy liên tục
-    if st.session_state.is_pinging:
+if st.session_state.is_pinging:
         with st.spinner("Đang kết nối đến trình duyệt của bạn để đo trễ..."):
             js_code = """
             (function() {
