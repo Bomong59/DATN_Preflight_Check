@@ -97,35 +97,42 @@ else:
 # --- 6. BƯỚC 3: KIỂM TRA MẠNG (TÍNH NĂNG MỚI) ---
 st.subheader("🌐 Bước 3: Kiểm tra Mạng Giáo viên (Client-side)")
     
-if st.button("Đo kiểm mạng thực tế"):
+    # 1. Tạo biến nhớ trạng thái để hệ thống không quên việc đang đo mạng
+    if "is_pinging" not in st.session_state:
+        st.session_state.is_pinging = False
+
+    # 2. Nút bấm bây giờ chỉ làm nhiệm vụ BẬT công tắc
+    if st.button("Đo kiểm mạng thực tế"):
+        st.session_state.is_pinging = True
+
+    # 3. Khi công tắc bật, vòng lặp chờ JavaScript sẽ chạy liên tục
+    if st.session_state.is_pinging:
         with st.spinner("Đang kết nối đến trình duyệt của bạn để đo trễ..."):
-            # Lệnh JavaScript bóc tách thông số mạng (Round Trip Time) từ card mạng của giáo viên
             js_code = """
             (function() {
                 if (navigator.connection && navigator.connection.rtt) {
-                    return navigator.connection.rtt; // Trả về độ trễ tính bằng ms
+                    return navigator.connection.rtt;
                 } else {
-                    return -1; // Báo lỗi nếu dùng trình duyệt quá cũ hoặc Safari
+                    return -1;
                 }
             })();
             """
-            
-            # Thực thi JS trên trình duyệt người dùng và lấy kết quả về Python
             client_ping = st_javascript(js_code)
             
             # Xử lý kết quả trả về
             if client_ping == 0 or client_ping is None:
-                # Lần đầu load JS có thể mất 1 nhịp, yêu cầu bấm lại
-                st.info("🔄 Đang lấy chỉ số card mạng, vui lòng bấm nút 'Đo kiểm mạng' thêm lần nữa...")
+                # Lúc này nó sẽ hiện dòng này tầm 1-2 giây rồi TỰ ĐỘNG nhảy sang kết quả
+                st.info("🔄 Đang lấy chỉ số card mạng, hệ thống đang chờ phản hồi...")
                 
             elif client_ping == -1:
                 st.warning("⚠️ Trình duyệt của bạn chặn quyền đọc thông số mạng (Khuyên dùng Chrome/Edge).")
                 st.session_state.net_status = "Không xác định"
+                st.session_state.is_pinging = False # Tắt công tắc
                 
             else:
                 st.success(f"✅ Đã đo thành công! Độ trễ mạng thực tế (Ping): **{client_ping} ms**")
                 
-                # Đánh giá mạng theo chuẩn thực tế
+                # Phân loại tình trạng mạng cho ca dạy
                 if client_ping < 50:
                     st.info("🚀 Mạng rất mượt! (Thích hợp dạy Livestream 1080p)")
                     st.session_state.net_status = "Tốt"
@@ -135,6 +142,9 @@ if st.button("Đo kiểm mạng thực tế"):
                 else:
                     st.error("🔴 Mạng đang rất yếu hoặc giật lag! Vui lòng kiểm tra lại Wifi/4G.")
                     st.session_state.net_status = "Kém"
+                
+                # Đo xong thì tắt công tắc đi
+                st.session_state.is_pinging = False
 
 # --- 7. BƯỚC 4: GỬI BÁO CÁO (KHÓA CHẶT 3 ĐIỀU KIỆN) ---
 st.subheader("📤 Bước 4: Chốt Ca Dạy")
