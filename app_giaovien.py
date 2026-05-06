@@ -137,7 +137,7 @@ if st.session_state.net_message != "":
 st.divider()
 
 # --- 7. BƯỚC 4: GỬI BÁO CÁO (KHÓA CHẶT 3 ĐIỀU KIỆN) ---
-st.subheader("📤 Bước 4: Chốt Ca Dạy")
+sheader("📤 Bước 4: Chốt Ca Dạy")
 st.write(f"**Camera:** {st.session_state.cam_status} | **Micro:** {st.session_state.mic_status} | **Mạng:** {st.session_state.net_status}")
 
 if st.button("Gửi Báo Cáo Lên Hệ Thống", type="primary"):
@@ -146,7 +146,7 @@ if st.button("Gửi Báo Cáo Lên Hệ Thống", type="primary"):
     elif st.session_state.cam_status != "Tốt":
         st.error("🛑 Không thể gửi! Vui lòng hoàn thành test Camera.")
     elif st.session_state.mic_status != "Tốt":
-        st.error("🛑 Không thể gửi! Vui lòng hoàn thành test Micro.")
+        st.error("🛑 Không t.subthể gửi! Vui lòng hoàn thành test Micro.")
     elif "Lỗi" in st.session_state.net_status or st.session_state.net_status == "Chưa test":
         st.error("🛑 Không thể gửi! Mạng của bạn chưa test hoặc đang bị rớt mạng.")
     else:
@@ -154,10 +154,10 @@ if st.button("Gửi Báo Cáo Lên Hệ Thống", type="primary"):
             try:
                 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
                 import json
-# Lấy nội dung chìa khóa từ két sắt Streamlit
-creds_dict = json.loads(st.secrets["GOOGLE_CREDENTIALS"])
-# Đăng nhập bằng dữ liệu vừa lấy
-creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+                # Lấy nội dung chìa khóa từ két sắt Streamlit
+                creds_dict = json.loads(st.secrets["GOOGLE_CREDENTIALS"])
+                # Đăng nhập bằng dữ liệu vừa lấy
+                creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
                 client = gspread.authorize(creds)
                 sheet = client.open("DuLieu_Preflight").sheet1
 
