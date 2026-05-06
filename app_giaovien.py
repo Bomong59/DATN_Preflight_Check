@@ -97,7 +97,7 @@ else:
 # --- 6. BƯỚC 3: KIỂM TRA MẠNG (TÍNH NĂNG MỚI) ---
 st.subheader("🌐 Bước 3: Kiểm tra Mạng Giáo viên (Client-side)")
     
-    if st.button("Đo kiểm mạng thực tế"):
+if st.button("Đo kiểm mạng thực tế"):
         with st.spinner("Đang kết nối đến trình duyệt của bạn để đo trễ..."):
             # Lệnh JavaScript bóc tách thông số mạng (Round Trip Time) từ card mạng của giáo viên
             js_code = """
