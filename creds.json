@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "civic-karma-396308",
+  "private_key_id": "d71e5e1edb459d98fa679e09b502bae5fcecfcc2",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDB4FVtO7+A4pT5\nh2b9dPCrOhhcOS9uL75FERxD6Dm/q7S3GOcdI4Og1WPCdufWi2NX/vD9JnOqL/wP\n6RA+inN5irzxp29OlSk7xz4NigAt8dGTOPYfrDwnlaZZYHDghQexrkX/d1u4KpuM\nrET3jlVOMqnQY7MIn3XZR9j9DyIZncbIBQ3/Qhyc8Wm6RdEDQABpjJNl3DzgTzWU\nQS0cjwoE+hyjIhhH9aVRHBIzAnu9dCmmTtyCWBaJ23hCEpuctbtVzCTf6fbDd/Kw\nrKUtXhrEyY68EtDpmSi4LoI5iDv/HQ5wq7PF5j3jWrxdHH7oeTSm8E+cmDLDbgsS\nTbPxP5FtAgMBAAECggEAGK1a+kUjXj6Y6zz4lzTKCGVj4eM2fg4uKADiSeN2bEbp\nAPA2xJ73W2Kl6MP1RPnnenUdC//Xs5cZfJX0Bx3czmDiJVkkQgqa3bzB0XvaA38W\n56gVrdjgrEIwUwqDO5S7MrrFtptk7Ydg1rI7sg3oHkS1GC0Ehgmz+KTcQfOp6bwS\nIUmgbZ0JrMoa+nCplmCLJlog9z6JaBmgcr64SdwAVgoVL8dAY3dBpIi7NfWisaUM\nQdyeohEtfbFlnaCXlxxRkovQ8eM2KAPkbyUiFRAPoXFIhu5Ii7Q46Ax+F2kt1XAx\nnyvEgAM0PulDrS8qDHlIgueukU+P9rzFSu9hA6Z5SQKBgQD3aniWuumIVAKiBPE8\n57V80G8hy1vHEq9Ylu7tz8h8r6Pjk2OWmlApZ2GSkemZvDT7pysXH2RwCFi2NawB\n8C5PKnxGpI7lzWGyzZl09oJ6i935iEWrhFe9tMVp7N0qOAht3uvbNI2IvdAESu61\nwkD1x/mtl52zdQmZZSX2x9VC2QKBgQDImlP72+915oEmmOpsp9jgqmw4aSlWTe8l\nlKTC5FT/LEcEaT4s5KzOxaZX/ROtJGLOEMooyFDQEglR3yin0Lq+iPKS5Es8r6d2\nvBsDxUYEykQZOEmq3MX31jtTXQpKOAPoVQEASzNV+AWoD4OIBeLmYY/s4LkfDHMo\nk5f8ScT+tQKBgQC8JC7HECN+E8RcyD1Z/yk3XJjlreqAm2jTiRLvrE3c4wNRj0bv\nwzCqC39bIbHtwfzYUOqnjqultfMfu/itEKNmd/xBC+nOPjvI6CeFld7qqWmG02WH\nZAAEtm5YelJERI/EXPwlmPT3wr9oREL53FnhjMwEgYLecGV4TD5uRs+ZIQKBgAZ+\nyL1c77H3lrLzPJPsE1+i5QImlYoP1/B1kagl0IK6okoIRlUZymafi7VJont2tCRL\n8t/DLKqwCtE10pEsdv94W7JZ5f2/CkMT8CP9HTlGe1H9upTntRlDPISEfLLOgYHi\nTrf9t1nPQA+jAPVEi4Y+HnTjCdtxgcEMll063kAJAoGAb2bntJA57lCIIdCuz92W\nyAqiTKhWjRtXmNNnudJvKsa59QVCYB5vdApB3ueKkPGIkEJ9RhEZD2/msM+Ha2yF\nhZ6H/YkKhYcTscLYVRBdwMTQIwKCLc7BJrkiD1FnFus25BfHb1biY8eVuyxh9Tjb\nDvWfnd1G/kePPWKqASE1CgY=\n-----END PRIVATE KEY-----\n",
+  "client_email": "bot-preflight@civic-karma-396308.iam.gserviceaccount.com",
+  "client_id": "104413348455871839007",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/bot-preflight%40civic-karma-396308.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
