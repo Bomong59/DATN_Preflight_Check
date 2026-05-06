@@ -97,71 +97,57 @@ else:
 # --- 6. BƯỚC 3: KIỂM TRA MẠNG  ---
 st.subheader("🌐 Bước 3: Kiểm tra Mạng Giáo viên (Client-side)")
     
-    # 1. Khai báo các biến trí nhớ cho hệ thống
-if "is_pinging" not in st.session_state:
-        st.session_state.is_pinging = False
-if "ping_attempts" not in st.session_state:
-        st.session_state.ping_attempts = 0
+    # 1. Khởi tạo biến lưu kết quả ping (Trí nhớ của hệ thống)
+if "ping_result" not in st.session_state:
+        st.session_state.ping_result = None
 
-    # 2. Bật công tắc và reset bộ đếm khi bấm nút
+    # 2. Nút bấm chỉ làm 1 việc duy nhất: Chuyển trạng thái sang "ĐANG ĐO"
 if st.button("Đo kiểm mạng thực tế"):
-        st.session_state.is_pinging = True
-        st.session_state.ping_attempts = 0
+        st.session_state.ping_result = "DANG_DO"
 
-    # 3. Vòng lặp đo mạng và ép máy chủ làm việc
-if st.session_state.is_pinging:
+    # 3. Kịch bản 1: Đang trong quá trình đo
+if st.session_state.ping_result == "DANG_DO":
+        # Thư viện này sẽ mất khoảng 0.5s để lấy số. Trong lúc đó nó sẽ trả về số 0
         js_code = """
         (function() {
-            try {
-                if (navigator.connection && navigator.connection.rtt) {
-                    return navigator.connection.rtt;
-                } else {
-                    return -1;
-                }
-            } catch(e) {
-                return -1;
+            if (navigator.connection && navigator.connection.rtt) {
+                return navigator.connection.rtt;
+            } else {
+                return 'KHONG_HO_TRO';
             }
         })();
         """
         client_ping = st_javascript(js_code)
         
-        # Nếu chưa nhận được số (bị kẹt ở số 0)
-        if client_ping == 0 or client_ping is None:
-            st.session_state.ping_attempts += 1
+        # Nếu đang load (trả về 0) -> Chỉ hiện thông báo chờ, KHÔNG F5, KHÔNG RERUN
+        if client_ping == 0:
+            st.info("🔄 Đang phân tích luồng mạng từ trình duyệt của bạn (Sẽ tự nảy số)...")
             
-            if st.session_state.ping_attempts > 5:
-                # Vượt quá 5 giây -> Ép dừng để không bị treo
-                st.error("⏱️ Quá thời gian chờ! Trình duyệt chặn kết nối hoặc mạng quá yếu.")
-                st.session_state.net_status = "Lỗi"
-                st.session_state.is_pinging = False
-            else:
-                # Đang đếm ngược -> Ép máy chủ tải lại trang để hỏi số
-                st.info(f"🔄 Đang lấy thông số từ Card mạng (Chờ {st.session_state.ping_attempts}/5 giây)...")
-                import time
-                time.sleep(1)
-                st.rerun() # Lệnh này cực kỳ quan trọng: Ép Streamlit tỉnh dậy!
-                
-        # Nếu thiết bị không hỗ trợ đọc thông số mạng (ví dụ iPhone/Safari cũ)
-        elif client_ping == -1:
-            st.warning("⚠️ Trình duyệt của bạn chặn quyền đọc thông số mạng (Khuyên dùng Chrome/Edge).")
-            st.session_state.net_status = "Không xác định"
-            st.session_state.is_pinging = False
-            
-        # Nếu lấy số thành công
+        # Nếu đã lấy được số liệu (Bản thân Streamlit sẽ tự bắt tín hiệu và chạy vào đây)
         else:
-            st.success(f"✅ Đã đo thành công! Độ trễ mạng thực tế (Ping): **{client_ping} ms**")
-            
-            if client_ping < 50:
-                st.info("🚀 Mạng rất mượt! (Thích hợp dạy Livestream 1080p)")
-                st.session_state.net_status = "Tốt"
-            elif client_ping <= 150:
-                st.warning("⚡ Mạng khá ổn định. (Thích hợp dạy 720p hoặc Audio)")
-                st.session_state.net_status = "Bình thường"
-            else:
-                st.error("🔴 Mạng đang rất yếu hoặc giật lag! Vui lòng kiểm tra lại Wifi/4G.")
-                st.session_state.net_status = "Kém"
-            
-            st.session_state.is_pinging = False
+            st.session_state.ping_result = client_ping  # Lưu số liệu vào trí nhớ
+            st.rerun()  # Ép load lại màn hình 1 lần duy nhất để chuyển sang Kịch bản 2
+
+    # 4. Kịch bản 2: Xử lý kết quả trả về
+    elif st.session_state.ping_result == "KHONG_HO_TRO":
+        st.warning("⚠️ Trình duyệt/Điện thoại này (ví dụ iPhone) bảo mật quá cao, đã chặn quyền đọc Ping.")
+        st.session_state.net_status = "Tốt" 
+        st.info("✅ Hệ thống tự động Bypass (cho qua) để bạn tiếp tục gửi báo cáo.")
+        
+    elif isinstance(st.session_state.ping_result, (int, float)):
+        ping = int(st.session_state.ping_result)
+        st.success(f"✅ Đã đo thành công! Độ trễ mạng thực tế: **{ping} ms**")
+        
+        # Phân loại để đánh giá
+        if ping < 50:
+            st.info("🚀 Mạng rất mượt! (Thích hợp dạy Livestream 1080p)")
+            st.session_state.net_status = "Tốt"
+        elif ping <= 150:
+            st.warning("⚡ Mạng khá ổn định. (Thích hợp dạy 720p hoặc Audio)")
+            st.session_state.net_status = "Bình thường"
+        else:
+            st.error("🔴 Mạng đang rất yếu hoặc giật lag! Vui lòng kiểm tra lại Wifi/4G.")
+            st.session_state.net_status = "Kém"
 
 # --- 7. BƯỚC 4: GỬI BÁO CÁO (KHÓA CHẶT 3 ĐIỀU KIỆN) ---
 st.subheader("📤 Bước 4: Chốt Ca Dạy")
