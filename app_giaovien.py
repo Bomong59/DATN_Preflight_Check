@@ -109,7 +109,7 @@ if st.button("Đo kiểm mạng thực tế"):
         st.session_state.ping_attempts = 0
 
     # 3. Vòng lặp đo mạng và ép máy chủ làm việc
-    if st.session_state.is_pinging:
+if st.session_state.is_pinging:
         js_code = """
         (function() {
             try {
