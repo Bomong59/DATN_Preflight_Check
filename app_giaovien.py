@@ -95,56 +95,47 @@ else:
     st.session_state.mic_status = "Chưa test"
 
 # --- 6. BƯỚC 3: KIỂM TRA MẠNG (TÍNH NĂNG MỚI) ---
-st.subheader("🌐 Bước 3: Kiểm tra Mạng Giáo viên (Client-side)")
-    
-    # 1. Tạo biến nhớ trạng thái để hệ thống không quên việc đang đo mạng
-    if "is_pinging" not in st.session_state:
-        st.session_state.is_pinging = False
-
-    # 2. Nút bấm bây giờ chỉ làm nhiệm vụ BẬT công tắc
-    if st.button("Đo kiểm mạng thực tế"):
-        st.session_state.is_pinging = True
-
-    # 3. Khi công tắc bật, vòng lặp chờ JavaScript sẽ chạy liên tục
-    if st.session_state.is_pinging:
-        with st.spinner("Đang kết nối đến trình duyệt của bạn để đo trễ..."):
-            js_code = """
-            (function() {
-                if (navigator.connection && navigator.connection.rtt) {
-                    return navigator.connection.rtt;
-                } else {
-                    return -1;
-                }
-            })();
-            """
-            client_ping = st_javascript(js_code)
+st.subheader("🌐 Bước 3: Kiểm tra Băng thông & Độ trễ (Ping)")
+if st.button("Đo kiểm mạng (Ping Test)"):
+    with st.spinner("Đang gửi gói tin đến máy chủ Google (8.8.8.8)..."):
+        try:
+            # Gửi 3 gói tin và lấy thời gian trung bình
+            tong_thoi_gian = 0
+            for i in range(3):
+                start = time.time()
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.settimeout(2.0) # Quá 2 giây không phản hồi là đứt mạng
+                s.connect(("8.8.8.8", 53))
+                s.close()
+                tong_thoi_gian += (time.time() - start) * 1000 # Đổi ra ms
+                time.sleep(0.1)
+                
+            ping_trung_binh = tong_thoi_gian / 3
             
-            # Xử lý kết quả trả về
-            if client_ping == 0 or client_ping is None:
-                # Lúc này nó sẽ hiện dòng này tầm 1-2 giây rồi TỰ ĐỘNG nhảy sang kết quả
-                st.info("🔄 Đang lấy chỉ số card mạng, hệ thống đang chờ phản hồi...")
-                
-            elif client_ping == -1:
-                st.warning("⚠️ Trình duyệt của bạn chặn quyền đọc thông số mạng (Khuyên dùng Chrome/Edge).")
-                st.session_state.net_status = "Không xác định"
-                st.session_state.is_pinging = False # Tắt công tắc
-                
+            # Đánh giá chất lượng mạng (QoS)
+            if ping_trung_binh < 80:
+                st.session_state.net_status = "Tốt"
+                st.session_state.net_message = f"✅ Mạng rất mượt! Độ trễ: {ping_trung_binh:.0f} ms (Thích hợp dạy Livestream 1080p)"
+            elif ping_trung_binh < 200:
+                st.session_state.net_status = "Kém"
+                st.session_state.net_message = f"⚠️ Mạng hơi chậm! Độ trễ: {ping_trung_binh:.0f} ms (Có thể bị giật hình đôi chút)"
             else:
-                st.success(f"✅ Đã đo thành công! Độ trễ mạng thực tế (Ping): **{client_ping} ms**")
+                st.session_state.net_status = "Lỗi (Lag)"
+                st.session_state.net_message = f"❌ Mạng quá lag! Độ trễ: {ping_trung_binh:.0f} ms. Học sinh sẽ không thể nghe bạn nói!"
                 
-                # Phân loại tình trạng mạng cho ca dạy
-                if client_ping < 50:
-                    st.info("🚀 Mạng rất mượt! (Thích hợp dạy Livestream 1080p)")
-                    st.session_state.net_status = "Tốt"
-                elif client_ping <= 150:
-                    st.warning("⚡ Mạng khá ổn định. (Thích hợp dạy 720p hoặc Audio)")
-                    st.session_state.net_status = "Bình thường"
-                else:
-                    st.error("🔴 Mạng đang rất yếu hoặc giật lag! Vui lòng kiểm tra lại Wifi/4G.")
-                    st.session_state.net_status = "Kém"
-                
-                # Đo xong thì tắt công tắc đi
-                st.session_state.is_pinging = False
+        except Exception:
+            st.session_state.net_status = "Lỗi (Mất mạng)"
+            st.session_state.net_message = "❌ Không có kết nối Internet! Vui lòng cắm lại cáp mạng hoặc kiểm tra Wifi."
+
+if st.session_state.net_message != "":
+    if st.session_state.net_status == "Tốt":
+        st.success(st.session_state.net_message)
+    elif st.session_state.net_status == "Kém":
+        st.warning(st.session_state.net_message)
+    else:
+        st.error(st.session_state.net_message)
+
+st.divider()
 
 # --- 7. BƯỚC 4: GỬI BÁO CÁO (KHÓA CHẶT 3 ĐIỀU KIỆN) ---
 st.subheader("📤 Bước 4: Chốt Ca Dạy")
