@@ -153,7 +153,11 @@ if st.button("Gửi Báo Cáo Lên Hệ Thống", type="primary"):
         with st.spinner("Đang đẩy dữ liệu lên máy chủ đám mây..."):
             try:
                 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-                creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json", scope)
+                import json
+# Lấy nội dung chìa khóa từ két sắt Streamlit
+creds_dict = json.loads(st.secrets["GOOGLE_CREDENTIALS"])
+# Đăng nhập bằng dữ liệu vừa lấy
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
                 client = gspread.authorize(creds)
                 sheet = client.open("DuLieu_Preflight").sheet1
 
