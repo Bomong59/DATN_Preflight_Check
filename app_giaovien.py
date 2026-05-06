@@ -7,6 +7,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 import socket
 import time
+from streamlit_javascript import st_javascript
 
 # --- 1. CÀI ĐẶT GIAO DIỆN CHUNG ---
 st.set_page_config(page_title="Pre-flight Check", page_icon="🚀", layout="centered")
@@ -94,47 +95,46 @@ else:
     st.session_state.mic_status = "Chưa test"
 
 # --- 6. BƯỚC 3: KIỂM TRA MẠNG (TÍNH NĂNG MỚI) ---
-st.subheader("🌐 Bước 3: Kiểm tra Băng thông & Độ trễ (Ping)")
-if st.button("Đo kiểm mạng (Ping Test)"):
-    with st.spinner("Đang gửi gói tin đến máy chủ Google (8.8.8.8)..."):
-        try:
-            # Gửi 3 gói tin và lấy thời gian trung bình
-            tong_thoi_gian = 0
-            for i in range(3):
-                start = time.time()
-                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                s.settimeout(2.0) # Quá 2 giây không phản hồi là đứt mạng
-                s.connect(("8.8.8.8", 53))
-                s.close()
-                tong_thoi_gian += (time.time() - start) * 1000 # Đổi ra ms
-                time.sleep(0.1)
-                
-            ping_trung_binh = tong_thoi_gian / 3
+st.subheader("🌐 Bước 3: Kiểm tra Mạng Giáo viên (Client-side)")
+    
+    if st.button("Đo kiểm mạng thực tế"):
+        with st.spinner("Đang kết nối đến trình duyệt của bạn để đo trễ..."):
+            # Lệnh JavaScript bóc tách thông số mạng (Round Trip Time) từ card mạng của giáo viên
+            js_code = """
+            (function() {
+                if (navigator.connection && navigator.connection.rtt) {
+                    return navigator.connection.rtt; // Trả về độ trễ tính bằng ms
+                } else {
+                    return -1; // Báo lỗi nếu dùng trình duyệt quá cũ hoặc Safari
+                }
+            })();
+            """
             
-            # Đánh giá chất lượng mạng (QoS)
-            if ping_trung_binh < 80:
-                st.session_state.net_status = "Tốt"
-                st.session_state.net_message = f"✅ Mạng rất mượt! Độ trễ: {ping_trung_binh:.0f} ms (Thích hợp dạy Livestream 1080p)"
-            elif ping_trung_binh < 200:
-                st.session_state.net_status = "Kém"
-                st.session_state.net_message = f"⚠️ Mạng hơi chậm! Độ trễ: {ping_trung_binh:.0f} ms (Có thể bị giật hình đôi chút)"
-            else:
-                st.session_state.net_status = "Lỗi (Lag)"
-                st.session_state.net_message = f"❌ Mạng quá lag! Độ trễ: {ping_trung_binh:.0f} ms. Học sinh sẽ không thể nghe bạn nói!"
+            # Thực thi JS trên trình duyệt người dùng và lấy kết quả về Python
+            client_ping = st_javascript(js_code)
+            
+            # Xử lý kết quả trả về
+            if client_ping == 0 or client_ping is None:
+                # Lần đầu load JS có thể mất 1 nhịp, yêu cầu bấm lại
+                st.info("🔄 Đang lấy chỉ số card mạng, vui lòng bấm nút 'Đo kiểm mạng' thêm lần nữa...")
                 
-        except Exception:
-            st.session_state.net_status = "Lỗi (Mất mạng)"
-            st.session_state.net_message = "❌ Không có kết nối Internet! Vui lòng cắm lại cáp mạng hoặc kiểm tra Wifi."
-
-if st.session_state.net_message != "":
-    if st.session_state.net_status == "Tốt":
-        st.success(st.session_state.net_message)
-    elif st.session_state.net_status == "Kém":
-        st.warning(st.session_state.net_message)
-    else:
-        st.error(st.session_state.net_message)
-
-st.divider()
+            elif client_ping == -1:
+                st.warning("⚠️ Trình duyệt của bạn chặn quyền đọc thông số mạng (Khuyên dùng Chrome/Edge).")
+                st.session_state.net_status = "Không xác định"
+                
+            else:
+                st.success(f"✅ Đã đo thành công! Độ trễ mạng thực tế (Ping): **{client_ping} ms**")
+                
+                # Đánh giá mạng theo chuẩn thực tế
+                if client_ping < 50:
+                    st.info("🚀 Mạng rất mượt! (Thích hợp dạy Livestream 1080p)")
+                    st.session_state.net_status = "Tốt"
+                elif client_ping <= 150:
+                    st.warning("⚡ Mạng khá ổn định. (Thích hợp dạy 720p hoặc Audio)")
+                    st.session_state.net_status = "Bình thường"
+                else:
+                    st.error("🔴 Mạng đang rất yếu hoặc giật lag! Vui lòng kiểm tra lại Wifi/4G.")
+                    st.session_state.net_status = "Kém"
 
 # --- 7. BƯỚC 4: GỬI BÁO CÁO (KHÓA CHẶT 3 ĐIỀU KIỆN) ---
 st.subheader("📤 Bước 4: Chốt Ca Dạy")
