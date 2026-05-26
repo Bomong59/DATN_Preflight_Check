@@ -181,10 +181,4 @@ if st.button("Gửi Báo Cáo Lên Hệ Thống", type="primary"):
                 st.balloons()
                 
             except Exception as e:
-                # Nếu ngoại lệ trả về chứa mã 200 (Thành công) thì biến nó thành thông báo xanh
-                if "200" in str(e):
-                    st.success("🎉 Đã chứng thực thành công! Dữ liệu đã được lưu trên máy chủ quản lý.")
-                    st.balloons()
-                else:
-                    # Nếu là lỗi thực sự thì mới báo đỏ
-                    st.error(f"❌ Lỗi kết nối Google Sheets: {e}")
+                st.error(f"❌ Lỗi kết nối Google Sheets: {e}")
